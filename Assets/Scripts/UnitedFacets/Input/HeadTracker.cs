@@ -3,7 +3,7 @@ using System.Collections;
 
 public class HeadTracker : MonoBehaviour
 {
-
+/*
     public Tracker tracker;
     public View view;
     public int trackerHeadID;
@@ -22,7 +22,7 @@ public class HeadTracker : MonoBehaviour
         {
             values = tracker.GetBodyPosition(trackerHeadID) * scaleFactor;
 
-            if(invertX)
+            if (invertX)
             {
                 values.x *= -1;
             }
@@ -40,4 +40,5 @@ public class HeadTracker : MonoBehaviour
             view.HeadOffset = values;
         }
     }
+    */
 }
