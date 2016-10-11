@@ -1,0 +1,2 @@
+-np 1 --oversubscribe -x DISPLAY=:0.0 --prefix /home/asigitov/unitydev/env/openmpi_184 -x LD_LIBRARY_PATH -x PATH -host 127.0.0.1 2d.x86_64
+-np 1 --oversubscribe -x DISPLAY=:0.0 --prefix /home/asigitov/unitydev/env/openmpi_184 -x LD_LIBRARY_PATH -x PATH -host 127.0.0.1 2d.x86_64
