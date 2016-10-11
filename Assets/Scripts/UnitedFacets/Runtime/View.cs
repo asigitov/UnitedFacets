@@ -232,7 +232,16 @@ public class View : MonoBehaviour
         if (approach == SyncApproach.Naive)
         {
             // Create one camera for the particular screen
+            Debug.Log("Screens count: " + activeScreenSetup.Screens.Count);
+            foreach(DisplayUnitInternal s in activeScreenSetup.Screens)
+            {
+                Debug.Log("rank: " + s.MPIRank);
+            }
             DisplayUnitInternal du = activeScreenSetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
+            if(du == null)
+            {
+                Debug.Log("du is null");
+            }
             du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
             du.ScreenCam.name = du.Name;
             du.ScreenCam.transform.parent = cameraHead.transform;
