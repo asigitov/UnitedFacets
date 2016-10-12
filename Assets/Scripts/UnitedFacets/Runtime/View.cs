@@ -232,20 +232,22 @@ public class View : MonoBehaviour
         if (approach == SyncApproach.Naive)
         {
             // Create one camera for the particular screen
-            Debug.Log("Screens count: " + activeScreenSetup.Screens.Count);
-            foreach(DisplayUnitInternal s in activeScreenSetup.Screens)
+            //DisplayUnitInternal du = activeScreenSetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
+
+            //du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
+            //du.ScreenCam.name = du.Name;
+            //du.ScreenCam.transform.parent = cameraHead.transform;
+            //du.ScreenCam.transform.localPosition = Vector3.zero;
+
+            List<DisplayUnitInternal> dus = activeScreenSetup.Screens.FindAll(x => x.MPIRank == MPIEnvironment.Rank);
+            for (int i = 0; i < dus.Count; i++)
             {
-                Debug.Log("rank: " + s.MPIRank);
+                DisplayUnitInternal du = dus[i];
+                du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
+                du.ScreenCam.name = du.Name;
+                du.ScreenCam.transform.parent = cameraHead.transform;
+                du.ScreenCam.transform.localPosition = Vector3.zero;
             }
-            DisplayUnitInternal du = activeScreenSetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
-            if(du == null)
-            {
-                Debug.Log("du is null");
-            }
-            du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
-            du.ScreenCam.name = du.Name;
-            du.ScreenCam.transform.parent = cameraHead.transform;
-            du.ScreenCam.transform.localPosition = Vector3.zero;
         }
         else if (approach == SyncApproach.Cn_Adaptive)
         {
