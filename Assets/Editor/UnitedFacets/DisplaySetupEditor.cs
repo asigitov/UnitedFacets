@@ -508,7 +508,7 @@ public class DisplaySetupEditor : Editor
 
         // TODO: If there is no UniformColorMaterial, an exception will be thrown
         // Draw the geometry.
-        if (uniformColorMaterial == null) uniformColorMaterial = (Material)Resources.Load("UniformColorMaterial");
+        if (uniformColorMaterial == null) uniformColorMaterial = (Material)Resources.Load("UnitedFacets/UniformColorMaterial");
         uniformColorMaterial.color = color;
         uniformColorMaterial.SetPass(0);
         GL.PushMatrix();
