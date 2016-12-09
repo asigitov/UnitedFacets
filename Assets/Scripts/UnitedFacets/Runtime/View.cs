@@ -27,22 +27,22 @@ public class View : MonoBehaviour
     }
 
     [SerializeField]
-    private BorderOption bOption;
-    public BorderOption BOption
+    private BorderOption borders;
+    public BorderOption Borders
     {
-        get { return bOption; }
-        set { bOption = value; }
+        get { return borders; }
+        set { borders = value; }
     }
 
     [SerializeField]
-    private DisplaySetup activeScreenSetup;
-    public DisplaySetup ActiveScreenSetup
+    private DisplaySetup activeDisplaySetup;
+    public DisplaySetup ActiveDisplaySetup
     {
-        get { return activeScreenSetup; }
+        get { return activeDisplaySetup; }
         set
         {
-            if (activeScreenSetup == value) return;
-            activeScreenSetup = value;
+            if (activeDisplaySetup == value) return;
+            activeDisplaySetup = value;
 
             SetupCameras();
         }
@@ -168,10 +168,10 @@ public class View : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (activeScreenSetup == null) return;
+        if (activeDisplaySetup == null) return;
 
         Gizmos.matrix = transform.localToWorldMatrix;
-        foreach (DisplayUnitInternal screen in activeScreenSetup.Screens)
+        foreach (DisplayUnitInternal screen in activeDisplaySetup.Screens)
         {
             Vector3[] screenCorners = screen.ComputeOutterCornerPoints();
 
@@ -197,7 +197,7 @@ public class View : MonoBehaviour
                 Gizmos.DrawLine(screenCorners[1], screenCorners[3]);
             }
 
-            if (activeScreenSetup != null && activeScreenSetup.Projection == DisplaySetup.ProjectionType.Perspective)
+            if (activeDisplaySetup != null && activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Perspective)
                 for (int i = 0; i < 4; ++i) Gizmos.DrawLine(screenCorners[i], cameraHeadPosition);
 
         }
@@ -214,7 +214,7 @@ public class View : MonoBehaviour
             cameraHead = null;
         }
 
-        if (activeScreenSetup == null) return;
+        if (activeDisplaySetup == null) return;
 
         // We need an outer wrapper for camera effects such as shaking.
         cameraHeadWrapper = new GameObject("CameraHeadWrapper");
@@ -239,7 +239,7 @@ public class View : MonoBehaviour
             //du.ScreenCam.transform.parent = cameraHead.transform;
             //du.ScreenCam.transform.localPosition = Vector3.zero;
 
-            List<DisplayUnitInternal> dus = activeScreenSetup.Screens.FindAll(x => x.MPIRank == MPIEnvironment.Rank);
+            List<DisplayUnitInternal> dus = activeDisplaySetup.Screens.FindAll(x => x.MPIRank == MPIEnvironment.Rank);
             for (int i = 0; i < dus.Count; i++)
             {
                 DisplayUnitInternal du = dus[i];
@@ -255,7 +255,7 @@ public class View : MonoBehaviour
             // If current process is the manager, then create all cameras
             if (MPIEnvironment.Manager)
             {
-                foreach (DisplayUnitInternal screen in activeScreenSetup.Screens)
+                foreach (DisplayUnitInternal screen in activeDisplaySetup.Screens)
                 {
                     screen.ScreenCam = (GameObject)Instantiate(cameraPrefab);
                     screen.ScreenCam.name = screen.Name;
@@ -269,7 +269,7 @@ public class View : MonoBehaviour
             }
             else
             {
-                DisplayUnitInternal du = activeScreenSetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
+                DisplayUnitInternal du = activeDisplaySetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
                 du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
                 du.ScreenCam.name = du.Name;
                 du.ScreenCam.transform.parent = cameraHead.transform;
@@ -280,7 +280,7 @@ public class View : MonoBehaviour
         {
             if (MPIEnvironment.Manager)
             {
-                foreach (DisplayUnitInternal screen in activeScreenSetup.Screens)
+                foreach (DisplayUnitInternal screen in activeDisplaySetup.Screens)
                 {
                     screen.ScreenCam = (GameObject)Instantiate(cameraPrefab);
                     screen.ScreenCam.name = screen.Name;
@@ -298,7 +298,7 @@ public class View : MonoBehaviour
             }
             else
             {
-                DisplayUnitInternal du = activeScreenSetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
+                DisplayUnitInternal du = activeDisplaySetup.Screens.Find(x => x.MPIRank == MPIEnvironment.Rank);
                 du.ScreenCam = (GameObject)Instantiate(cameraPrefab);
                 du.ScreenCam.name = du.Name;
                 du.ScreenCam.transform.parent = cameraHead.transform;
@@ -321,7 +321,7 @@ public class View : MonoBehaviour
     //public Tracker tracker;
     private void UpdateCameras()
     {
-        if (activeScreenSetup == null) return;
+        if (activeDisplaySetup == null) return;
 
         // Set the camera head position.
         cameraHead.transform.localPosition = cameraHeadPosition;
@@ -340,7 +340,7 @@ public class View : MonoBehaviour
             MPIEnvironment.BroadcastLocalPosition(cameraHead, MPIEnvironment.ManagerRank);
         }
 
-        foreach (DisplayUnitInternal du in ActiveScreenSetup.Screens)
+        foreach (DisplayUnitInternal du in ActiveDisplaySetup.Screens)
         {
             if (du.ScreenCam != null)
             {
@@ -369,11 +369,11 @@ public class View : MonoBehaviour
     {
 
         Vector3 cameraPosition = Vector3.zero;
-        if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Perspective)
+        if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Perspective)
         {
             cameraPosition = cameraHead.transform.localPosition;
         }
-        else if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
+        else if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
         {
             cameraPosition = screen.Center + (screen.Normal);
         }
@@ -384,7 +384,7 @@ public class View : MonoBehaviour
         // Transform two opposing corner points of the screen into the camera's coordinate system.
         Quaternion invCameraRotation = Quaternion.Inverse(camera.transform.localRotation);
         Vector3[] screenCorners;
-        if (bOption == BorderOption.Ignore)
+        if (borders == BorderOption.Ignore)
         {
             screenCorners = screen.ComputeOutterCornerPoints();
         }
@@ -408,12 +408,12 @@ public class View : MonoBehaviour
         float height = top - bottom;
         Camera theCamera = camera.GetComponent<Camera>();
 
-        if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Perspective)
+        if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Perspective)
         {
             theCamera.aspect = width / height;
             theCamera.fieldOfView = Mathf.Rad2Deg * 2 * Mathf.Max(Mathf.Atan(Mathf.Abs(top)), Mathf.Atan(Mathf.Abs(bottom)));
         }
-        else if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
+        else if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
         {
             theCamera.transform.position = cameraPosition;
             theCamera.orthographicSize = screen.Height * 0.5f;
@@ -424,11 +424,11 @@ public class View : MonoBehaviour
         theCamera.farClipPlane = farClippingPlane;
 
         // Now set the actual projection matrix.
-        if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Perspective)
+        if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Perspective)
         {
             theCamera.projectionMatrix = Utils.PerspectiveOffCenter(left, right, bottom, top, nearClippingPlane, farClippingPlane);
         }
-        else if (activeScreenSetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
+        else if (activeDisplaySetup.Projection == DisplaySetup.ProjectionType.Orthogonal)
         {
             theCamera.projectionMatrix = Utils.OrthogonalOffCenter(left, right, bottom, top, nearClippingPlane, farClippingPlane);
         }

@@ -18,7 +18,7 @@ public class ViewEditor : Editor
         if (GUILayout.Button("Generate MPI app file"))
         {
 
-            DisplaySetup screenSetup = me.ActiveScreenSetup;
+            DisplaySetup screenSetup = me.ActiveDisplaySetup;
             List<string> commands = new List<string>(screenSetup.Screens.Count);
             for (int i = 0; i < screenSetup.Screens.Count; i++)
             {

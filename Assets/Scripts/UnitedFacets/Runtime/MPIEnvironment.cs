@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿// <copyright file="MPIEnvironment.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary>Class for management of MPI environment and for sending of MPI messages</summary>
+
+using UnityEngine;
 using UnityEngine.UI;
 using MPI;
 
@@ -524,6 +530,83 @@ public class MPIEnvironment : MonoBehaviour
         {
             Communicator.world.Receive<byte>(source, Communicator.anyTag, ref buf);
 
+        }
+    }
+
+    //*********************
+    // Event
+    //*********************
+
+    public static void FireEvent(int eventID)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int)*2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            for (int i = 0; i < MPIEnvironment.WorldSize; i++)
+            {
+                if (i == MPIEnvironment.ManagerRank)
+                    continue;
+
+                Communicator.world.Send<byte>(buffer, i, Communicator.anyTag);
+            }
+        }
+    }
+
+    public static void FireEvent(int eventID, int dest)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int) * 2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            Communicator.world.Send<byte>(buffer, dest, Communicator.anyTag);
+            
+        }
+    }
+
+    public static void FireEvent(int eventID, int[] dest)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int) * 2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            foreach(int n in dest)
+            {
+                Communicator.world.Send<byte>(buffer, n, Communicator.anyTag);
+            }
         }
     }
 

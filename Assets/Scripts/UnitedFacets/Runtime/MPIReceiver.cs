@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿// <copyright file="MPIReceiver.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary>Class for receiving and processing of MPI messages from the Manager</summary>
+
+using UnityEngine;
+using System.Collections.Generic;
 
 public class MPIReceiver : MonoBehaviour
 {
     private MPIObjectManager mom;
-    //private View vc;
-    //private int[] package = new int[2];
     byte[] buffer = new byte[128];
 
     void Start()
@@ -15,9 +20,8 @@ public class MPIReceiver : MonoBehaviour
         }
 
         mom = FindObjectOfType<MPIObjectManager>();
-        //vc = FindObjectOfType<View>();
     }
-    
+
     void Update()
     {
         if (MPIEnvironment.Simulate || MPIEnvironment.Manager)
@@ -51,14 +55,43 @@ public class MPIReceiver : MonoBehaviour
                         go.transform.rotation = new Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                         go.transform.localScale = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                     }
+
+                    if (code == MessageCodes.FireEvent)
+                    {
+                        FireEvent(vid);
+                    }
                 }
             }
         }
     }
 
-    void receiveTransform(int id)
+    public delegate void EventCallback();
+    private Dictionary<int, List<EventCallback>> callbacks = new Dictionary<int, List<EventCallback>>();
+
+    // TODO: Check for identical callbacks
+    // TODO: Add unsubscribe method
+    public void SubscribeToEvent(int eventID, EventCallback callback)
     {
-        GameObject go = mom.GetGameObjectWithID(id);
-        MPIEnvironment.ReceiveTransform(go, MPIEnvironment.ManagerRank);
+        if (callbacks.ContainsKey(eventID))
+        {
+            callbacks[eventID].Add(callback);
+        }
+        else
+        {
+            callbacks[eventID] = new List<EventCallback>();
+            callbacks[eventID].Add(callback);
+        }
+
+    }
+
+    private void FireEvent(int eventID)
+    {
+        if (!callbacks.ContainsKey(eventID))
+            return;
+
+        foreach(EventCallback ec in callbacks[eventID])
+        {
+            ec();
+        }
     }
 }
