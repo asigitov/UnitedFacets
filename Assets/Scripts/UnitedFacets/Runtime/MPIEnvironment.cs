@@ -77,6 +77,8 @@ public class MPIEnvironment : MonoBehaviour
         DontDestroyOnLoad(this.gameObject);
     }
 
+    #region Transform distribution
+
     //##############################
     // TRANSFORM DISTRIBUTION
     //##############################
@@ -320,6 +322,10 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Code distribution
+
     public static void Send2AllCode(int code, int managerRank)
     {
         if (Simulate)
@@ -348,6 +354,10 @@ public class MPIEnvironment : MonoBehaviour
 
         }
     }
+
+    #endregion
+
+    #region Linerenderer distribution
 
     //##############################
     // LINERENDERER DISTRIBUTION
@@ -410,6 +420,10 @@ public class MPIEnvironment : MonoBehaviour
             index++;
         }
     }
+
+    #endregion
+
+    #region Integer distribution
 
     //##############################
     // INTEGER DISTRIBUTION
@@ -504,6 +518,10 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Bytes distribution
+
     // ***********************
     // BYTES
     // ***********************
@@ -532,6 +550,10 @@ public class MPIEnvironment : MonoBehaviour
 
         }
     }
+
+    #endregion
+
+    #region Event distribution
 
     //*********************
     // Event
@@ -610,4 +632,5 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
 }

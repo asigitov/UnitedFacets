@@ -47,16 +47,14 @@ public class MPIReceiver : MonoBehaviour
                         done = true;
                         break;
                     }
-
-                    if (code == MessageCodes.UpdateTransform)
+                    else if (code == MessageCodes.UpdateTransform)
                     {
                         GameObject go = mom.GetGameObjectWithID(vid);
                         go.transform.position = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                         go.transform.rotation = new Quaternion(br.ReadSingle(), br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                         go.transform.localScale = new Vector3(br.ReadSingle(), br.ReadSingle(), br.ReadSingle());
                     }
-
-                    if (code == MessageCodes.FireEvent)
+                    else if (code == MessageCodes.FireEvent)
                     {
                         FireEvent(vid);
                     }
@@ -66,30 +64,40 @@ public class MPIReceiver : MonoBehaviour
     }
 
     public delegate void EventCallback();
-    private Dictionary<int, List<EventCallback>> callbacks = new Dictionary<int, List<EventCallback>>();
+    private static Dictionary<int, List<EventCallback>> callbacks = new Dictionary<int, List<EventCallback>>();
 
-    // TODO: Check for identical callbacks
-    // TODO: Add unsubscribe method
-    public void SubscribeToEvent(int eventID, EventCallback callback)
+    public static void SubscribeToEvent(int eventID, EventCallback callback)
     {
         if (callbacks.ContainsKey(eventID))
         {
-            callbacks[eventID].Add(callback);
+            if (!callbacks[eventID].Contains(callback))
+                callbacks[eventID].Add(callback);
         }
         else
         {
             callbacks[eventID] = new List<EventCallback>();
             callbacks[eventID].Add(callback);
         }
-
     }
 
-    private void FireEvent(int eventID)
+    public static void UnsubscribeFromEvent(int eventID, EventCallback callback)
+    {
+        if (callbacks.ContainsKey(eventID))
+        {
+            callbacks[eventID].Remove(callback);
+            if (callbacks[eventID].Count == 0)
+            {
+                callbacks.Remove(eventID);
+            }
+        }
+    }
+
+    private static void FireEvent(int eventID)
     {
         if (!callbacks.ContainsKey(eventID))
             return;
 
-        foreach(EventCallback ec in callbacks[eventID])
+        foreach (EventCallback ec in callbacks[eventID])
         {
             ec();
         }
