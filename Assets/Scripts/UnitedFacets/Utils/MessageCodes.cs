@@ -1,5 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿// <copyright file="MessageCodes.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016-2017 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary></summary>
 
 public static class MessageCodes
 {

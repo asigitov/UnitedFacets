@@ -1,3 +1,9 @@
+// <copyright file="DisplaySetup.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016-2017 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary></summary>
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
