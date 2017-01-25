@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿// <copyright file="MPIEnvironment.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary>Class for management of MPI environment and for sending of MPI messages</summary>
+
+using UnityEngine;
 using UnityEngine.UI;
 using MPI;
 
@@ -70,6 +76,8 @@ public class MPIEnvironment : MonoBehaviour
         // We need this in order to preserve the MPI environemnt on scene change
         DontDestroyOnLoad(this.gameObject);
     }
+
+    #region Transform distribution
 
     //##############################
     // TRANSFORM DISTRIBUTION
@@ -314,6 +322,10 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Code distribution
+
     public static void Send2AllCode(int code, int managerRank)
     {
         if (Simulate)
@@ -342,6 +354,10 @@ public class MPIEnvironment : MonoBehaviour
 
         }
     }
+
+    #endregion
+
+    #region Linerenderer distribution
 
     //##############################
     // LINERENDERER DISTRIBUTION
@@ -404,6 +420,10 @@ public class MPIEnvironment : MonoBehaviour
             index++;
         }
     }
+
+    #endregion
+
+    #region Integer distribution
 
     //##############################
     // INTEGER DISTRIBUTION
@@ -498,6 +518,10 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Bytes distribution
+
     // ***********************
     // BYTES
     // ***********************
@@ -527,4 +551,86 @@ public class MPIEnvironment : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Event distribution
+
+    //*********************
+    // Event
+    //*********************
+
+    public static void FireEvent(int eventID)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int)*2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            for (int i = 0; i < MPIEnvironment.WorldSize; i++)
+            {
+                if (i == MPIEnvironment.ManagerRank)
+                    continue;
+
+                Communicator.world.Send<byte>(buffer, i, Communicator.anyTag);
+            }
+        }
+    }
+
+    public static void FireEvent(int eventID, int dest)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int) * 2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            Communicator.world.Send<byte>(buffer, dest, Communicator.anyTag);
+            
+        }
+    }
+
+    public static void FireEvent(int eventID, int[] dest)
+    {
+        if (Simulate)
+            return;
+
+        if (Initialized)
+        {
+            byte[] buffer = new byte[sizeof(int) * 2];
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream(buffer))
+            {
+                using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                {
+                    bw.Write(MessageCodes.FireEvent);
+                    bw.Write(eventID);
+                }
+            }
+
+            foreach(int n in dest)
+            {
+                Communicator.world.Send<byte>(buffer, n, Communicator.anyTag);
+            }
+        }
+    }
+
+    #endregion
 }

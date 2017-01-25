@@ -1,5 +1,10 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿// <copyright file="MPIView.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary>Class for object state synchronization</summary>
+
+using UnityEngine;
 using System.Collections.Generic;
 
 public class MPIView : MonoBehaviour
@@ -39,7 +44,7 @@ public class MPIView : MonoBehaviour
 
         // Get View instance
         vc = GameObject.FindObjectOfType<View>();
-        screens = GameObject.FindObjectOfType<View>().ActiveScreenSetup.Screens;
+        screens = GameObject.FindObjectOfType<View>().ActiveDisplaySetup.Screens;
         dests = new bool[MPIEnvironment.WorldSize];
         rs = new int[MPIEnvironment.WorldSize];
 
@@ -158,7 +163,7 @@ public class MPIView : MonoBehaviour
 
         if (MPIEnvironment.Initialized)
         {
-            DisplayUnitInternal screen = vc.ActiveScreenSetup.Screens.Find(x => x.Name == Camera.current.name);
+            DisplayUnitInternal screen = vc.ActiveDisplaySetup.Screens.Find(x => x.Name == Camera.current.name);
             if (screen.MPIRank == MPIEnvironment.Rank)
                 return;
 

@@ -1,4 +1,10 @@
-﻿using UnityEngine;
+﻿// <copyright file="ViewEditor.cs" company="Institute of Visual Computing / Bonn-Rhein-Sieg University of Applied Sciences">
+// Copyright (c) 2016-2017 All Rights Reserved
+// </copyright>
+// <author>Anton Sigitov</author>
+// <summary></summary>
+
+using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Collections;
@@ -18,7 +24,7 @@ public class ViewEditor : Editor
         if (GUILayout.Button("Generate MPI app file"))
         {
 
-            DisplaySetup screenSetup = me.ActiveScreenSetup;
+            DisplaySetup screenSetup = me.ActiveDisplaySetup;
             List<string> commands = new List<string>(screenSetup.Screens.Count);
             for (int i = 0; i < screenSetup.Screens.Count; i++)
             {
