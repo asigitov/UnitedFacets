@@ -36,6 +36,20 @@ public class MPIObjectManager : MonoBehaviour
         }
     }
 
+    public void RegisterMPIView(MPIView mv)
+    {
+        if (!views.Contains(mv))
+        {
+            mv.MPIViewID = objectCounter++;
+            views.Add(mv);
+        }
+    }
+
+    public void UnregisterMPIView(MPIView mv)
+    {
+        views.Remove(mv);
+    }
+
     public void RemoveMPIView(int id)
     {
         views.RemoveAll(x => x.MPIViewID == id);
